@@ -55,6 +55,12 @@ function analyzeSalesData(data, options) {
         throw new Error('Некорректные опции');
     }
 
+    if (!Array.isArray(data.sellers) || data.sellers.length === 0
+        || !Array.isArray(data.products) || data.products.length === 0
+        || !Array.isArray(data.purchase_records) || data.purchase_records.length === 0) {
+        throw new Error('Некорректные входные данные');
+    }
+
     // @TODO: Подготовка промежуточных данных для сбора статистики
     const sellersStats = data.sellers.map(seler => {
         return {
@@ -118,7 +124,7 @@ function analyzeSalesData(data, options) {
     // @TODO: Подготовка итоговой коллекции с нужными полями
     const result = sellersStats.map(seller => {
         return {
-            id: seller.id,
+            seller_id: seller.id,
             name: `${seller.first_name} ${seller.last_name}`,
             revenue: + seller.revenue.toFixed(2),
             profit: + seller.profit.toFixed(2),
