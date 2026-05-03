@@ -85,15 +85,14 @@ function analyzeSalesData(data, options) {
         const seller = sellerIndex[record.seller_id]; // Продавец
         // Увеличить количество продаж 
         seller.sales_count++;
-        // Увеличить общую сумму выручки всех продаж
-        seller.revenue += record.total_amount;
         // Расчёт прибыли для каждого товара
         record.items.forEach(item => {
             const product = productIndex[item.sku]; // Товар
             // Посчитать себестоимость (cost) товара как product.purchase_price, умноженную на количество товаров из чека
             const cost = product.purchase_price * item.quantity;
             // Посчитать выручку (revenue) с учётом скидки через функцию calculateRevenue
-            const revenue = calculateSimpleRevenue(item, product);
+            const revenue = calculateRevenue(item, product);
+            seller.revenue += revenue;
             // Посчитать прибыль: выручка минус себестоимость
             const profit = revenue - cost;
             // Увеличить общую накопленную прибыль (profit) у продавца  
@@ -112,7 +111,7 @@ function analyzeSalesData(data, options) {
 
     // @TODO: Назначение премий на основе ранжирования
     sellersStats.forEach((seller, index) => {
-        seller.bonus = calculateBonusByProfit(index, sellersStats.length, seller);
+        seller.bonus = calculateBonus(index, sellersStats.length, seller);
         seller.top_products = Object.entries(seller.products_sold).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([sku, quantity]) => ({ sku, quantity }));
     });
 
